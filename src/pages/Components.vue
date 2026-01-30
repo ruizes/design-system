@@ -108,6 +108,92 @@
         </div>
       </section>
 
+      <!-- 网格布局组件 -->
+      <section class="component-section">
+        <h2>网格布局组件 GridLayout</h2>
+        <p>一个支持拖拽、网格对齐、碰撞检测和自动吸附的网格布局组件。</p>
+        <div class="component-demo">
+          <GridLayout
+            :width="800"
+            :height="400"
+            :grid-size="20"
+            v-model="gridLayoutItems"
+            @item-move="onItemMove"
+          >
+            <template #item="{ item }">
+              <div class="custom-grid-item">
+                <div class="item-header">{{ item && item.content ? item.content : '' }}</div>
+                <div class="item-body">
+                  <p>大小: {{ item && item.width ? item.width : 0 }} × {{ item && item.height ? item.height : 0 }}</p>
+                  <p>位置: {{ item && item.x ? item.x : 0 }}, {{ item && item.y ? item.y : 0 }}</p>
+                </div>
+              </div>
+            </template>
+          </GridLayout>
+        </div>
+        <div class="component-features">
+          <h3>主要功能</h3>
+          <ul>
+            <li>网格对齐：拖拽时自动对齐到网格</li>
+            <li>碰撞检测：拖拽组件时会推动其他组件</li>
+            <li>自动吸附：移走组件后，下方组件自动向上填充空缺</li>
+            <li>自定义内容：支持插槽自定义每个网格项的内容</li>
+          </ul>
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;GridLayout
+  :width="800"
+  :height="400"
+  :grid-size="20"
+  v-model="gridLayoutItems"
+  @item-move="onItemMove"
+&gt;
+  &lt;template #item="{ item }"&gt;
+    &lt;div class="custom-item"&gt;{{ item && item.content ? item.content : '' }}&lt;/div&gt;
+  &lt;/template&gt;
+&lt;/GridLayout&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- 甘特图组件 -->
+      <section class="component-section">
+        <h2>甘特图组件 GanttChart</h2>
+        <p>一个用于项目进度管理的甘特图组件，支持任务展示、进度跟踪和详情查看。</p>
+        <div class="component-demo">
+          <GanttChart
+            :tasks="ganttTasks"
+            :start-date="ganttStartDate"
+            :end-date="ganttEndDate"
+            :width="900"
+            :row-height="50"
+            :day-width="25"
+            @task-select="onTaskSelect"
+          />
+        </div>
+        <div class="component-features">
+          <h3>主要功能</h3>
+          <ul>
+            <li>时间轴展示：按月份和日期显示时间轴</li>
+            <li>任务条形图：可视化展示任务时间跨度</li>
+            <li>进度显示：每个任务条内显示完成进度</li>
+            <li>周末标记：区分工作日和周末</li>
+            <li>今日线：标记当前日期位置</li>
+            <li>任务详情：点击任务查看详细信息</li>
+          </ul>
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;GanttChart
+  :tasks="tasks"
+  :start-date="startDate"
+  :end-date="endDate"
+  :width="900"
+  :row-height="50"
+  :day-width="25"
+  @task-select="onTaskSelect"
+/&gt;</code></pre>
+        </div>
+      </section>
+
       <!-- 设计令牌 -->
       <section class="component-section">
         <h2>设计令牌 Design Tokens</h2>
@@ -133,6 +219,107 @@
     </div>
   </div>
 </template>
+
+<script>
+import { ref } from 'vue'
+import GridLayout from '../components/GridLayout.vue'
+import GanttChart from '../components/GanttChart.vue'
+
+export default {
+  name: 'ComponentsPage',
+  components: {
+    GridLayout,
+    GanttChart
+  },
+  setup() {
+    // 网格布局示例数据
+    const gridLayoutItems = ref([
+      { id: '1', x: 0, y: 0, width: 200, height: 150, content: '项目 1' },
+      { id: '2', x: 220, y: 0, width: 180, height: 150, content: '项目 2' },
+      { id: '3', x: 0, y: 170, width: 200, height: 120, content: '项目 3' },
+      { id: '4', x: 220, y: 170, width: 180, height: 120, content: '项目 4' },
+      { id: '5', x: 420, y: 0, width: 160, height: 100, content: '项目 5' }
+    ])
+    
+    // 甘特图示例数据
+    const ganttTasks = ref([
+      {
+        id: '1',
+        name: '需求分析',
+        assignee: '张三',
+        startDate: '2025-01-01',
+        endDate: '2025-01-15',
+        progress: 100,
+        critical: true,
+        description: '收集和分析项目需求，制定项目计划'
+      },
+      {
+        id: '2',
+        name: 'UI设计',
+        assignee: '李四',
+        startDate: '2025-01-10',
+        endDate: '2025-01-25',
+        progress: 80,
+        critical: false,
+        description: '设计用户界面和交互流程'
+      },
+      {
+        id: '3',
+        name: '前端开发',
+        assignee: '王五',
+        startDate: '2025-01-20',
+        endDate: '2025-02-10',
+        progress: 60,
+        critical: true,
+        description: '实现前端功能和用户界面'
+      },
+      {
+        id: '4',
+        name: '后端开发',
+        assignee: '赵六',
+        startDate: '2025-01-15',
+        endDate: '2025-02-05',
+        progress: 70,
+        critical: true,
+        description: '实现后端API和数据库设计'
+      },
+      {
+        id: '5',
+        name: '测试',
+        assignee: '钱七',
+        startDate: '2025-02-05',
+        endDate: '2025-02-20',
+        progress: 20,
+        critical: false,
+        description: '进行功能测试和性能测试'
+      }
+    ])
+    
+    // 甘特图时间范围
+    const ganttStartDate = ref(new Date('2025-01-01'))
+    const ganttEndDate = ref(new Date('2025-02-28'))
+    
+    // 网格布局项目移动事件
+    const onItemMove = (event) => {
+      console.log('项目移动:', event)
+    }
+    
+    // 甘特图任务选择事件
+    const onTaskSelect = (task) => {
+      console.log('任务选择:', task)
+    }
+    
+    return {
+      gridLayoutItems,
+      ganttTasks,
+      ganttStartDate,
+      ganttEndDate,
+      onItemMove,
+      onTaskSelect
+    }
+  }
+}
+</script>
 
 <style scoped>
 .components-page {
@@ -262,6 +449,57 @@
 .card-icon {
   font-size: 2.5rem;
   margin-bottom: var(--space-md);
+}
+
+.component-features {
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  border-left: 4px solid var(--primary);
+}
+
+.component-features h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+  color: var(--primary);
+}
+
+.component-features ul {
+  margin: 0;
+  padding-left: var(--space-xl);
+}
+
+.component-features li {
+  margin-bottom: var(--space-sm);
+  color: var(--gray-700);
+}
+
+.custom-grid-item {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+}
+
+.item-header {
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-lg);
+}
+
+.item-body {
+  font-size: var(--text-sm);
+  opacity: 0.9;
+}
+
+.item-body p {
+  margin: 0;
+  margin-bottom: var(--space-xs);
 }
 
 @media (max-width: 768px) {
