@@ -163,12 +163,17 @@ watch(() => props.modelValue, (newVal) => {
 }, { immediate: true, deep: true })
 
 // 网格容器样式
-const gridStyle = computed(() => ({
-  position: 'relative',
-  width: '100%',
-  minHeight: `${calculateGridHeight()}px`,
-  userSelect: 'none'
-}))
+const gridStyle = computed(() => {
+  // 计算网格总宽度：列数 * (单元格宽度 + 间距) + 间距
+  const totalWidth = props.cols * (props.cellWidth + props.gap) + props.gap
+  return {
+    position: 'relative',
+    width: `${totalWidth}px`,
+    minHeight: `${calculateGridHeight()}px`,
+    userSelect: 'none',
+    margin: '0 auto'
+  }
+})
 
 // 网格背景样式
 const gridBackgroundStyle = computed(() => {
@@ -317,19 +322,17 @@ const handleMouseUp = () => {
 // 处理碰撞检测与挤压
 const handleCollision = (draggedItem, newX, newY) => {
   const otherItems = layoutItems.value.filter(item => item.id !== draggedItem.id)
+  const draggedItemNewRect = { x: newX, y: newY, w: draggedItem.w, h: draggedItem.h }
 
   // 检查是否与任何其他项碰撞
   const collidingItems = otherItems.filter(item =>
-    isColliding(
-      { x: newX, y: newY, w: draggedItem.w, h: draggedItem.h },
-      item
-    )
+    isColliding(draggedItemNewRect, item)
   )
 
   if (collidingItems.length > 0) {
     // 为碰撞的项寻找新位置
     collidingItems.forEach(item => {
-      const newPosition = findNewPosition(item, draggedItem, newX, newY)
+      const newPosition = findNewPosition(item, draggedItem, newX, newY, draggedItemNewRect)
       if (newPosition) {
         item.x = newPosition.x
         item.y = newPosition.y
@@ -337,12 +340,13 @@ const handleCollision = (draggedItem, newX, newY) => {
     })
 
     // 级联处理：检查被移动的项是否又与其他项碰撞
-    resolveCollisionsCascade(otherItems)
+    resolveCollisionsCascade(otherItems, draggedItemNewRect)
   }
 }
 
 // 为新位置寻找合适的位置
-const findNewPosition = (item, draggedItem, dragX, dragY) => {
+const findNewPosition = (item, draggedItem, dragX, dragY, draggedItemNewRect) => {
+  // 排除当前项和被拖拽项，同时考虑被拖拽项的新位置
   const otherItems = layoutItems.value.filter(i => i.id !== item.id && i.id !== draggedItem.id)
 
   // 尝试不同的位置，优先向下移动
@@ -351,21 +355,40 @@ const findNewPosition = (item, draggedItem, dragX, dragY) => {
 
     // 检查这个位置是否可用
     const testRect = { x: item.x, y: testY, w: item.w, h: item.h }
-    const hasCollision = otherItems.some(other => isColliding(testRect, other))
+    // 检查是否与其他项碰撞，以及是否与被拖拽项的新位置碰撞
+    const hasCollisionWithOthers = otherItems.some(other => isColliding(testRect, other))
+    const hasCollisionWithDragged = draggedItemNewRect && isColliding(testRect, draggedItemNewRect)
 
-    if (!hasCollision) {
+    if (!hasCollisionWithOthers && !hasCollisionWithDragged) {
       return { x: item.x, y: testY }
     }
   }
 
   // 如果向下找不到位置，尝试向右
-  for (let offsetX = 1; offsetX < props.cols - item.x; offsetX++) {
+  for (let offsetX = 1; offsetX <= props.cols - item.x - item.w; offsetX++) {
     const testX = item.x + offsetX
-    const testRect = { x: testX, y: item.y, w: item.w, h: item.h }
-    const hasCollision = otherItems.some(other => isColliding(testRect, other))
+    // 确保不超出右边界
+    if (testX + item.w > props.cols) continue
 
-    if (!hasCollision) {
+    const testRect = { x: testX, y: item.y, w: item.w, h: item.h }
+    const hasCollisionWithOthers = otherItems.some(other => isColliding(testRect, other))
+    const hasCollisionWithDragged = draggedItemNewRect && isColliding(testRect, draggedItemNewRect)
+
+    if (!hasCollisionWithOthers && !hasCollisionWithDragged) {
       return { x: testX, y: item.y }
+    }
+  }
+
+  // 如果同一行找不到位置，尝试换行
+  for (let testY = item.y + 1; testY < 20; testY++) {
+    for (let testX = 0; testX <= props.cols - item.w; testX++) {
+      const testRect = { x: testX, y: testY, w: item.w, h: item.h }
+      const hasCollisionWithOthers = otherItems.some(other => isColliding(testRect, other))
+      const hasCollisionWithDragged = draggedItemNewRect && isColliding(testRect, draggedItemNewRect)
+
+      if (!hasCollisionWithOthers && !hasCollisionWithDragged) {
+        return { x: testX, y: testY }
+      }
     }
   }
 
@@ -373,16 +396,26 @@ const findNewPosition = (item, draggedItem, dragX, dragY) => {
 }
 
 // 级联碰撞解决
-const resolveCollisionsCascade = (items) => {
+const resolveCollisionsCascade = (items, draggedItemNewRect) => {
   let hasChanges = true
   let iterations = 0
-  const maxIterations = 10
+  const maxIterations = 20
 
   while (hasChanges && iterations < maxIterations) {
     hasChanges = false
     iterations++
 
     for (let i = 0; i < items.length; i++) {
+      // 检查是否与拖拽项的新位置碰撞
+      if (draggedItemNewRect && isColliding(items[i], draggedItemNewRect)) {
+        // 向下移动以避开拖拽项
+        const newY = draggedItemNewRect.y + draggedItemNewRect.h
+        if (newY > items[i].y) {
+          items[i].y = newY
+          hasChanges = true
+        }
+      }
+
       for (let j = i + 1; j < items.length; j++) {
         if (isColliding(items[i], items[j])) {
           // 移动后面的项向下
