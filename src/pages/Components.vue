@@ -1,3 +1,102 @@
+<script setup>
+import { ref } from 'vue'
+import DraggableGrid from '../components/DraggableGrid.vue'
+import GanttChart from '../components/GanttChart.vue'
+
+// 可拖拽网格示例数据
+const gridItems = ref([
+  { id: 'item-1', label: '卡片 A', x: 0, y: 0, w: 1, h: 1 },
+  { id: 'item-2', label: '卡片 B', x: 1, y: 0, w: 1, h: 1 },
+  { id: 'item-3', label: '卡片 C', x: 2, y: 0, w: 1, h: 1 },
+  { id: 'item-4', label: '宽卡片', x: 0, y: 1, w: 2, h: 1 },
+  { id: 'item-5', label: '高卡片', x: 2, y: 1, w: 1, h: 2 },
+  { id: 'item-6', label: '卡片 D', x: 3, y: 0, w: 1, h: 1 }
+])
+
+const gridRef = ref(null)
+
+const addGridItem = () => {
+  const labels = ['新卡片', '任务', '项目', '模块', '组件']
+  const randomLabel = labels[Math.floor(Math.random() * labels.length)]
+  gridRef.value?.addItem({
+    label: `${randomLabel} ${gridItems.value.length + 1}`,
+    w: Math.random() > 0.7 ? 2 : 1,
+    h: Math.random() > 0.8 ? 2 : 1
+  })
+}
+
+const removeLastItem = () => {
+  if (gridItems.value.length > 0) {
+    const lastItem = gridItems.value[gridItems.value.length - 1]
+    gridRef.value?.removeItem(lastItem.id)
+  }
+}
+
+const handleGridChange = (newLayout) => {
+  console.log('Grid layout changed:', newLayout)
+}
+
+// 甘特图示例数据
+const ganttTasks = ref([
+  {
+    id: 1,
+    name: '项目启动',
+    start: '2025-02-01',
+    end: '2025-02-05',
+    progress: 100,
+    status: 'completed',
+    isGroup: true,
+    collapsed: false,
+    children: [
+      { id: 11, name: '需求分析', start: '2025-02-01', end: '2025-02-03', progress: 100, status: 'completed' },
+      { id: 12, name: '项目计划', start: '2025-02-03', end: '2025-02-05', progress: 100, status: 'completed' }
+    ]
+  },
+  {
+    id: 2,
+    name: '设计阶段',
+    start: '2025-02-06',
+    end: '2025-02-15',
+    progress: 80,
+    status: 'progress',
+    isGroup: true,
+    collapsed: false,
+    children: [
+      { id: 21, name: 'UI设计', start: '2025-02-06', end: '2025-02-12', progress: 90, status: 'progress' },
+      { id: 22, name: '原型评审', start: '2025-02-12', end: '2025-02-15', progress: 60, status: 'progress' }
+    ]
+  },
+  {
+    id: 3,
+    name: '开发阶段',
+    start: '2025-02-16',
+    end: '2025-03-10',
+    progress: 30,
+    status: 'progress',
+    isGroup: true,
+    collapsed: false,
+    children: [
+      { id: 31, name: '前端开发', start: '2025-02-16', end: '2025-03-05', progress: 40, status: 'progress' },
+      { id: 32, name: '后端开发', start: '2025-02-16', end: '2025-03-05', progress: 35, status: 'progress' },
+      { id: 33, name: '接口联调', start: '2025-03-05', end: '2025-03-10', progress: 0, status: 'pending' }
+    ]
+  },
+  { id: 4, name: '测试阶段', start: '2025-03-11', end: '2025-03-20', progress: 0, status: 'pending' },
+  { id: 5, name: '项目上线', start: '2025-03-21', end: '2025-03-21', progress: 0, status: 'pending', isMilestone: true },
+  { id: 6, name: '关键路径任务', start: '2025-02-10', end: '2025-02-20', progress: 50, status: 'critical', dependencies: [11] }
+])
+
+const ganttStartDate = ref(new Date('2025-02-01'))
+
+const handleTaskClick = (task) => {
+  console.log('Task clicked:', task)
+}
+
+const handleTaskUpdate = (task) => {
+  console.log('Task updated:', task)
+}
+</script>
+
 <template>
   <div class="components-page">
     <div class="container">
@@ -5,6 +104,110 @@
         <h1>组件库文档</h1>
         <p>完整的设计系统组件库和使用指南</p>
       </div>
+
+      <!-- 可拖拽网格组件 -->
+      <section class="component-section">
+        <h2>可拖拽网格 DraggableGrid</h2>
+        <p class="component-desc">支持网格对齐、碰撞检测与挤压、自动向上吸附的拖拽布局组件</p>
+
+        <div class="component-demo">
+          <div class="demo-toolbar">
+            <button class="btn btn-primary btn-sm" @click="addGridItem">
+              <span>➕</span> 添加卡片
+            </button>
+            <button class="btn btn-outline btn-sm" @click="removeLastItem">
+              <span>🗑️</span> 删除最后
+            </button>
+          </div>
+
+          <DraggableGrid
+            ref="gridRef"
+            v-model="gridItems"
+            :cols="4"
+            :cell-width="120"
+            :row-height="100"
+            :gap="16"
+            :auto-compact="true"
+            :show-grid-lines="true"
+            @change="handleGridChange"
+          >
+            <template #default="{ item, isDragging }">
+              <div class="demo-grid-item" :class="{ 'is-dragging': isDragging }" v-if="item">
+                <div class="item-icon">📦</div>
+                <div class="item-label">{{ item.label || item.id }}</div>
+                <div class="item-size">{{ item.w }}×{{ item.h }}</div>
+              </div>
+            </template>
+          </DraggableGrid>
+        </div>
+
+        <div class="component-features">
+          <h4>功能特性：</h4>
+          <ul>
+            <li><strong>网格对齐</strong> - 拖拽过程中实时对齐网格</li>
+            <li><strong>碰撞检测与挤压</strong> - 拖拽组件A到组件B位置时，B自动让路</li>
+            <li><strong>自动向上吸附</strong> - 组件移走后，下方组件自动上浮填补空缺</li>
+          </ul>
+        </div>
+
+        <div class="code-example">
+          <pre v-pre><code>&lt;DraggableGrid
+  v-model="items"
+  :cols="4"
+  :cell-width="120"
+  :row-height="100"
+  :gap="16"
+  :auto-compact="true"
+&gt;
+  &lt;template #default="{ item }"&gt;
+    &lt;div class="grid-item"&gt;{{ item.label }}&lt;/div&gt;
+  &lt;/template&gt;
+&lt;/DraggableGrid&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- 甘特图组件 -->
+      <section class="component-section">
+        <h2>甘特图 GanttChart</h2>
+        <p class="component-desc">功能完整的项目管理甘特图组件，支持任务分组、里程碑、依赖关系</p>
+
+        <div class="component-demo gantt-demo">
+          <GanttChart
+            :tasks="ganttTasks"
+            :start-date="ganttStartDate"
+            :view-days="60"
+            :unit-width="40"
+            :row-height="40"
+            :sidebar-width="180"
+            :show-current-time="true"
+            :show-dependencies="true"
+            @task-click="handleTaskClick"
+            @task-update="handleTaskUpdate"
+          />
+        </div>
+
+        <div class="component-features">
+          <h4>功能特性：</h4>
+          <ul>
+            <li><strong>任务分组</strong> - 支持可折叠的任务组</li>
+            <li><strong>里程碑</strong> - 标记关键节点</li>
+            <li><strong>依赖关系</strong> - 可视化任务间的依赖连线</li>
+            <li><strong>进度追踪</strong> - 显示任务完成百分比</li>
+            <li><strong>当前时间线</strong> - 标记当前日期位置</li>
+            <li><strong>状态标识</strong> - 待开始/进行中/已完成/已延期/关键路径</li>
+          </ul>
+        </div>
+
+        <div class="code-example">
+          <pre><code>&lt;GanttChart
+  :tasks="tasks"
+  :start-date="new Date('2025-02-01')"
+  :view-days="60"
+  :show-dependencies="true"
+  @task-click="handleTaskClick"
+/&gt;</code></pre>
+        </div>
+      </section>
 
       <!-- 按钮组件 -->
       <section class="component-section">
@@ -264,9 +467,114 @@
   margin-bottom: var(--space-md);
 }
 
+/* 可拖拽网格组件样式 */
+.component-desc {
+  color: var(--gray-600);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-base);
+}
+
+.demo-toolbar {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+/* 网格容器滚动 */
+.component-demo > .draggable-grid {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.demo-grid-item {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.demo-grid-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.demo-grid-item.is-dragging {
+  transform: scale(1.02);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.demo-grid-item .item-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+}
+
+.demo-grid-item .item-label {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.demo-grid-item .item-size {
+  font-size: var(--text-xs);
+  opacity: 0.8;
+  margin-top: var(--space-xs);
+}
+
+.component-features {
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.component-features h4 {
+  margin-bottom: var(--space-md);
+  color: var(--gray-900);
+}
+
+.component-features ul {
+  margin: 0;
+  padding-left: var(--space-lg);
+  color: var(--gray-700);
+}
+
+.component-features li {
+  margin-bottom: var(--space-sm);
+  line-height: 1.6;
+}
+
+.component-features li:last-child {
+  margin-bottom: 0;
+}
+
+/* 甘特图演示样式 */
+.gantt-demo {
+  overflow-x: auto;
+  padding: var(--space-md);
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+}
+
 @media (max-width: 768px) {
   .demo-group {
     flex-direction: column;
+  }
+
+  .demo-toolbar {
+    flex-direction: column;
+  }
+
+  .demo-toolbar .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
