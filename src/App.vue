@@ -5,13 +5,11 @@
         <div class="nav-content">
           <router-link to="/" class="logo">
             <span class="logo-icon">🎨</span>
-            <span class="logo-text">设计系统</span>
+            <span class="logo-text">组件库</span>
           </router-link>
           <ul class="nav-links">
             <li><router-link to="/" class="nav-link">首页</router-link></li>
-            <li><router-link to="/components" class="nav-link">组件库</router-link></li>
-            <li><router-link to="/products" class="nav-link">产品展示</router-link></li>
-            <li><router-link to="/about" class="nav-link">关于我们</router-link></li>
+            <li><router-link to="/components" class="nav-link">组件演示</router-link></li>
           </ul>
         </div>
       </div>
@@ -20,12 +18,6 @@
     <main>
       <router-view />
     </main>
-    
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2025 在线业务展示设计系统. 保留所有权利.</p>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -64,6 +56,8 @@
   display: flex;
   gap: var(--space-xl);
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
@@ -82,15 +76,7 @@
 }
 
 main {
-  min-height: calc(100vh - 200px);
-}
-
-.footer {
-  background: white;
-  padding: var(--space-2xl) 0;
-  margin-top: var(--space-3xl);
-  text-align: center;
-  color: var(--gray-600);
+  min-height: calc(100vh - 100px);
 }
 
 @media (max-width: 768px) {
@@ -100,24 +86,10 @@ main {
     padding: var(--space-md) 0;
   }
   
-  .logo {
-    font-size: var(--text-lg);
-  }
-  
-  .logo-icon {
-    font-size: var(--text-xl);
-  }
-  
   .nav-links {
     justify-content: center;
     gap: var(--space-sm);
     width: 100%;
-  }
-  
-  .nav-link {
-    font-size: var(--text-sm);
-    padding: var(--space-xs) var(--space-sm);
-    white-space: nowrap;
   }
 }
 </style>
