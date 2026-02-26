@@ -1,3 +1,75 @@
+<script setup>
+import { ref } from 'vue'
+import DraggableGrid from '../components/DraggableGrid.vue'
+import GanttChart from '../components/GanttChart.vue'
+
+// 可拖拽网格示例数据
+const gridItems = ref([
+  { id: '1', label: '卡片 1', w: 1, h: 1, col: 0, row: 0 },
+  { id: '2', label: '卡片 2', w: 1, h: 1, col: 1, row: 0 },
+  { id: '3', label: '宽卡片', w: 2, h: 1, col: 2, row: 0 },
+  { id: '4', label: '高卡片', w: 1, h: 2, col: 0, row: 1 },
+  { id: '5', label: '卡片 5', w: 1, h: 1, col: 1, row: 1 },
+  { id: '6', label: '卡片 6', w: 1, h: 1, col: 2, row: 1 },
+  { id: '7', label: '大卡片', w: 2, h: 2, col: 1, row: 2 }
+])
+
+const handleGridChange = (items) => {
+  console.log('Grid changed:', items)
+}
+
+// 甘特图示例数据
+const ganttTasks = ref([
+  { id: '1', name: '需求分析', startDate: '2025-02-01', endDate: '2025-02-05', status: 'done', progress: 100 },
+  { id: '2', name: 'UI设计', startDate: '2025-02-04', endDate: '2025-02-10', status: 'done', progress: 100 },
+  { id: '3', name: '前端开发', startDate: '2025-02-08', endDate: '2025-02-20', status: 'inprogress', progress: 65 },
+  { id: '4', name: '后端开发', startDate: '2025-02-10', endDate: '2025-02-22', status: 'inprogress', progress: 45 },
+  { id: '5', name: '测试阶段', startDate: '2025-02-20', endDate: '2025-02-28', status: 'todo', progress: 0 },
+  { id: '6', name: '部署上线', startDate: '2025-02-28', endDate: '2025-03-02', status: 'todo', progress: 0 }
+])
+
+const ganttDependencies = ref([
+  { from: '1', to: '2' },
+  { from: '2', to: '3' },
+  { from: '2', to: '4' },
+  { from: '3', to: '5' },
+  { from: '4', to: '5' },
+  { from: '5', to: '6' }
+])
+
+const handleTaskClick = (task) => {
+  console.log('Task clicked:', task)
+}
+
+// 获取项目颜色
+const getItemColor = (id) => {
+  const colors = {
+    '1': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    '2': 'linear-gradient(135deg, #10b981, #059669)',
+    '3': 'linear-gradient(135deg, #f59e0b, #d97706)',
+    '4': 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+    '5': 'linear-gradient(135deg, #ec4899, #db2777)',
+    '6': 'linear-gradient(135deg, #06b6d4, #0891b2)',
+    '7': 'linear-gradient(135deg, #f97316, #ea580c)'
+  }
+  return colors[id] || 'linear-gradient(135deg, #6b7280, #4b5563)'
+}
+
+// 获取项目图标
+const getItemIcon = (id) => {
+  const icons = {
+    '1': '📄',
+    '2': '🎨',
+    '3': '📊',
+    '4': '📈',
+    '5': '⚙️',
+    '6': '🔧',
+    '7': '🚀'
+  }
+  return icons[id] || '📦'
+}
+</script>
+
 <template>
   <div class="components-page">
     <div class="container">
@@ -5,6 +77,53 @@
         <h1>组件库文档</h1>
         <p>完整的设计系统组件库和使用指南</p>
       </div>
+
+      <!-- 可拖拽网格布局组件 -->
+      <section class="component-section">
+        <h2>可拖拽网格布局 DraggableGrid</h2>
+        <p class="component-desc">支持网格对齐、二维碰撞检测与挤压、自动向上吸附的拖拽布局组件</p>
+        <div class="component-demo">
+          <DraggableGrid
+            v-model:items="gridItems"
+            :cols="4"
+            :row-height="100"
+            :gap="16"
+            :show-grid="true"
+            :compact="true"
+            :container-height="400"
+            @change="handleGridChange"
+          >
+            <template #default="slotProps">
+              <div
+                class="custom-grid-item"
+                :class="{ 'is-dragging': slotProps.isDragging }"
+                :style="{ background: getItemColor(slotProps.item.id) }"
+              >
+                <span class="item-icon">{{ getItemIcon(slotProps.item.id) }}</span>
+                <span class="item-label">{{ slotProps.item.label }}</span>
+              </div>
+            </template>
+          </DraggableGrid>
+        </div>
+      </section>
+
+      <!-- 甘特图组件 -->
+      <section class="component-section">
+        <h2>甘特图 GanttChart</h2>
+        <p class="component-desc">项目进度管理甘特图，支持任务依赖关系展示</p>
+        <div class="component-demo">
+          <GanttChart
+            :tasks="ganttTasks"
+            :dependencies="ganttDependencies"
+            start-date="2025-02-01"
+            end-date="2025-03-05"
+            :day-width="50"
+            :row-height="48"
+            :show-dependencies="true"
+            @task-click="handleTaskClick"
+          />
+        </div>
+      </section>
 
       <!-- 按钮组件 -->
       <section class="component-section">
@@ -20,11 +139,6 @@
             <button class="btn btn-primary">默认按钮</button>
             <button class="btn btn-primary btn-lg">大按钮</button>
           </div>
-        </div>
-        <div class="code-example">
-          <pre><code>&lt;button class="btn btn-primary"&gt;主要按钮&lt;/button&gt;
-&lt;button class="btn btn-secondary"&gt;次要按钮&lt;/button&gt;
-&lt;button class="btn btn-outline"&gt;边框按钮&lt;/button&gt;</code></pre>
         </div>
       </section>
 
@@ -47,12 +161,6 @@
             <button class="btn btn-primary btn-sm">了解更多</button>
           </div>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;div class="card"&gt;
-  &lt;h3&gt;卡片标题&lt;/h3&gt;
-  &lt;p&gt;卡片内容&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 表单组件 -->
@@ -72,9 +180,6 @@
             <textarea class="input" rows="3" placeholder="请输入详细内容"></textarea>
           </div>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;input type="text" class="input" placeholder="请输入内容"&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 标签组件 -->
@@ -85,10 +190,6 @@
           <span class="badge badge-primary">主要标签</span>
           <span class="badge badge-success">成功标签</span>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;span class="badge"&gt;默认标签&lt;/span&gt;
-&lt;span class="badge badge-primary"&gt;主要标签&lt;/span&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 网格系统 -->
@@ -98,13 +199,6 @@
           <div class="grid-demo-item">列 1</div>
           <div class="grid-demo-item">列 2</div>
           <div class="grid-demo-item">列 3</div>
-        </div>
-        <div class="code-example">
-          <pre><code>&lt;div class="grid grid-3"&gt;
-  &lt;div&gt;列 1&lt;/div&gt;
-  &lt;div&gt;列 2&lt;/div&gt;
-  &lt;div&gt;列 3&lt;/div&gt;
-&lt;/div&gt;</code></pre>
         </div>
       </section>
 
@@ -200,25 +294,6 @@
   color: var(--gray-700);
 }
 
-.code-example {
-  background: var(--gray-50);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  border: 1px solid var(--gray-200);
-}
-
-.code-example pre {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--gray-700);
-  overflow-x: auto;
-}
-
-.code-example code {
-  font-family: var(--font-mono);
-}
-
 .grid-demo-item {
   background: var(--primary);
   color: white;
@@ -262,6 +337,47 @@
 .card-icon {
   font-size: 2.5rem;
   margin-bottom: var(--space-md);
+}
+
+.component-desc {
+  color: var(--gray-600);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-base);
+}
+
+/* 自定义网格项样式 */
+.custom-grid-item {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.custom-grid-item:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.custom-grid-item.is-dragging {
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+.item-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+}
+
+.item-label {
+  font-size: var(--text-sm);
 }
 
 @media (max-width: 768px) {
