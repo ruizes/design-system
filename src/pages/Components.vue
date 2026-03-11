@@ -6,6 +6,51 @@
         <p>完整的设计系统组件库和使用指南</p>
       </div>
 
+      <!-- 可拖拽网格布局组件 -->
+      <section class="component-section">
+        <h2>可拖拽网格布局 Draggable Grid</h2>
+        <p class="section-description">支持拖拽、碰撞检测、自动挤压和向上吸附的智能网格布局组件</p>
+        <div class="grid-demo-wrapper">
+          <DraggableGridLayout :cols="12" :rows="15" :cell-width="50" :cell-height="50">
+            <template #default="{ item }">
+              <div class="grid-item-slot">
+                <p>{{ item.content }}</p>
+              </div>
+            </template>
+          </DraggableGridLayout>
+        </div>
+        <div class="demo-notice">
+          <strong>功能说明：</strong>拖拽组件标题栏移动，拖拽右下角调整大小，点击 × 删除。当组件碰撞时会自动挤压让路，释放后组件会自动向上吸附填补空位。
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;DraggableGridLayout :cols="12" :rows="15"&gt;
+  &lt;template #default="{ item }"&gt;
+    {{ item.content }}
+  &lt;/template&gt;
+&lt;/DraggableGridLayout&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- 甘特图组件 -->
+      <section class="component-section">
+        <h2>甘特图 Gantt Chart</h2>
+        <p class="section-description">功能强大的项目管理甘特图组件，支持任务拖拽、调整大小、分组展示和多视图切换</p>
+        <div class="gantt-demo-wrapper">
+          <GanttChart style="height: 500px;" />
+        </div>
+        <div class="demo-notice">
+          <strong>功能说明：</strong>拖拽任务条移动，拖拽左右边缘调整大小，支持日/周/月视图切换，可添加和删除任务，任务分组可展开折叠。
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;GanttChart 
+  :tasks="tasks" 
+  :row-height="44"
+  :cell-width="40"
+  @task-change="handleTaskChange"
+/&gt;</code></pre>
+        </div>
+      </section>
+
       <!-- 按钮组件 -->
       <section class="component-section">
         <h2>按钮 Buttons</h2>
@@ -268,5 +313,56 @@
   .demo-group {
     flex-direction: column;
   }
+}
+</style>
+
+<script setup>
+import DraggableGridLayout from '../components/DraggableGridLayout.vue'
+import GanttChart from '../components/GanttChart.vue'
+</script>
+
+<style scoped>
+.grid-demo-wrapper {
+  overflow: auto;
+  padding: var(--space-lg);
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.section-description {
+  color: var(--gray-600);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-base);
+}
+
+.demo-notice {
+  background: var(--info-50);
+  border: 1px solid var(--info-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  color: var(--info-700);
+  font-size: var(--text-sm);
+}
+
+.grid-item-slot {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-item-slot p {
+  margin: 0;
+  text-align: center;
+}
+
+.gantt-demo-wrapper {
+  height: 500px;
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
 }
 </style>
