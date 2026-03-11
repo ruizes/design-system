@@ -6,6 +6,90 @@
         <p>完整的设计系统组件库和使用指南</p>
       </div>
 
+      <!-- 模态框组件 -->
+      <section class="component-section">
+        <h2>模态框 Modal</h2>
+        <div class="component-demo">
+          <div class="demo-group">
+            <button class="btn btn-primary" @click="openModal('basic')">基础模态框</button>
+            <button class="btn btn-primary" @click="openModal('form')">表单模态框</button>
+            <button class="btn btn-primary" @click="openModal('confirm')">确认对话框</button>
+          </div>
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;Modal v-model="visible" title="模态框标题"&gt;
+  &lt;p&gt;模态框内容&lt;/p&gt;
+  &lt;template #footer&gt;
+    &lt;button class="btn btn-outline" @click="visible = false"&gt;取消&lt;/button&gt;
+    &lt;button class="btn btn-primary" @click="handleConfirm"&gt;确认&lt;/button&gt;
+  &lt;/template&gt;
+&lt;/Modal&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- 标签页组件 -->
+      <section class="component-section">
+        <h2>标签页 Tabs</h2>
+        <div class="component-demo">
+          <Tabs :tabs="tabs" v-model="activeTab">
+            <template #tab-0>
+              <div class="tab-content">
+                <h3>基础用法</h3>
+                <p>这是第一个标签页的内容。标签页组件支持图标、徽章和禁用状态。</p>
+              </div>
+            </template>
+            <template #tab-1>
+              <div class="tab-content">
+                <h3>高级功能</h3>
+                <p>标签页组件支持多种配置选项，可以满足不同场景的需求。</p>
+              </div>
+            </template>
+            <template #tab-2>
+              <div class="tab-content">
+                <h3>使用示例</h3>
+                <p>这里展示了标签页组件的各种使用方式和最佳实践。</p>
+              </div>
+            </template>
+          </Tabs>
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;Tabs :tabs="tabs" v-model="activeTab"&gt;
+  &lt;template #tab-0&gt;第一个标签页内容&lt;/template&gt;
+  &lt;template #tab-1&gt;第二个标签页内容&lt;/template&gt;
+&lt;/Tabs&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- 下拉菜单组件 -->
+      <section class="component-section">
+        <h2>下拉菜单 Dropdown</h2>
+        <div class="component-demo">
+          <div class="demo-group">
+            <Dropdown trigger-text="基础下拉">
+              <DropdownItem @click="handleAction">选项一</DropdownItem>
+              <DropdownItem @click="handleAction">选项二</DropdownItem>
+              <DropdownItem @click="handleAction">选项三</DropdownItem>
+            </Dropdown>
+            
+            <Dropdown trigger-text="带图标菜单">
+              <DropdownItem icon="📄" @click="handleAction">新建文件</DropdownItem>
+              <DropdownItem icon="📂" @click="handleAction">打开文件夹</DropdownItem>
+              <DropdownItem icon="💾" @click="handleAction">保存</DropdownItem>
+              <hr class="dropdown-divider">
+              <DropdownItem icon="🗑️" danger @click="handleAction">删除</DropdownItem>
+            </Dropdown>
+          </div>
+        </div>
+        <div class="code-example">
+          <pre><code>&lt;Dropdown trigger-text="下拉菜单"&gt;
+  &lt;DropdownItem @click="handleAction"&gt;选项一&lt;/DropdownItem&gt;
+  &lt;DropdownItem icon="📄" @click="handleAction"&gt;新建文件&lt;/DropdownItem&gt;
+  &lt;hr class="dropdown-divider"&gt;
+  &lt;DropdownItem danger @click="handleAction"&gt;删除&lt;/DropdownItem&gt;
+&lt;/Dropdown&gt;</code></pre>
+        </div>
+      </section>
+
       <!-- 按钮组件 -->
       <section class="component-section">
         <h2>按钮 Buttons</h2>
@@ -131,8 +215,98 @@
         </div>
       </section>
     </div>
+
+    <!-- 模态框实例 -->
+    <Modal v-model="basicModalVisible" title="基础模态框">
+      <p>这是一个基础模态框的内容。您可以在这里放置任何内容，包括文本、表单或其他组件。</p>
+      <template #footer>
+        <button class="btn btn-outline" @click="closeModal">取消</button>
+        <button class="btn btn-primary" @click="handleConfirm">确认</button>
+      </template>
+    </Modal>
+
+    <Modal v-model="formModalVisible" title="表单模态框" size="lg">
+      <div class="form-group">
+        <label>姓名</label>
+        <input type="text" class="input" v-model="formData.name" placeholder="请输入姓名">
+      </div>
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" class="input" v-model="formData.email" placeholder="请输入邮箱">
+      </div>
+      <template #footer>
+        <button class="btn btn-outline" @click="closeModal">取消</button>
+        <button class="btn btn-primary" @click="submitForm">提交</button>
+      </template>
+    </Modal>
+
+    <Modal v-model="confirmModalVisible" title="确认操作" size="sm">
+      <p>您确定要执行此操作吗？此操作不可撤销。</p>
+      <template #footer>
+        <button class="btn btn-outline" @click="closeModal">取消</button>
+        <button class="btn btn-danger" @click="handleConfirm">确认删除</button>
+      </template>
+    </Modal>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import Modal from '../components/Modal.vue'
+import Tabs from '../components/Tabs.vue'
+import Dropdown from '../components/Dropdown.vue'
+import DropdownItem from '../components/DropdownItem.vue'
+
+// 模态框状态
+const modalType = ref('')
+const basicModalVisible = ref(false)
+const formModalVisible = ref(false)
+const confirmModalVisible = ref(false)
+
+const openModal = (type) => {
+  modalType.value = type
+  if (type === 'basic') basicModalVisible.value = true
+  if (type === 'form') formModalVisible.value = true
+  if (type === 'confirm') confirmModalVisible.value = true
+}
+
+const closeModal = () => {
+  basicModalVisible.value = false
+  formModalVisible.value = false
+  confirmModalVisible.value = false
+}
+
+const handleConfirm = () => {
+  alert('确认操作已执行！')
+  closeModal()
+}
+
+// 标签页数据
+const activeTab = ref(0)
+const tabs = ref([
+  { label: '基础用法', icon: '📋' },
+  { label: '高级功能', icon: '⚡', badge: 3 },
+  { label: '使用示例', icon: '📝' },
+  { label: '禁用状态', disabled: true }
+])
+
+// 下拉菜单操作
+const handleAction = () => {
+  console.log('菜单项被点击')
+}
+
+// 表单数据
+const formData = ref({
+  name: '',
+  email: ''
+})
+
+const submitForm = () => {
+  alert(`表单提交成功！\n姓名: ${formData.value.name}\n邮箱: ${formData.value.email}`)
+  closeModal()
+  formData.value = { name: '', email: '' }
+}
+</script>
 
 <style scoped>
 .components-page {
