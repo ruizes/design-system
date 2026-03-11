@@ -6,21 +6,62 @@
         <p>探索我们的优质产品和服务</p>
       </div>
 
+      <!-- 搜索和筛选区域 -->
+      <div class="filter-section">
+        <div class="search-box">
+          <input 
+            type="text" 
+            class="input" 
+            v-model="searchQuery" 
+            placeholder="搜索产品..."
+          >
+        </div>
+        <div class="filter-buttons">
+          <button 
+            class="btn" 
+            :class="selectedCategory === '' ? 'btn-primary' : 'btn-outline'"
+            @click="selectCategory('')"
+          >
+            全部
+          </button>
+          <button 
+            v-for="category in categories" 
+            :key="category"
+            class="btn" 
+            :class="selectedCategory === category ? 'btn-primary' : 'btn-outline'"
+            @click="selectCategory(category)"
+          >
+            {{ category }}
+          </button>
+        </div>
+      </div>
+
       <div class="grid grid-3">
-        <div class="card product-card" v-for="product in products" :key="product.id">
+        <div class="card product-card" v-for="product in filteredProducts" :key="product.id">
           <div class="product-image">{{ product.icon }}</div>
           <span class="badge badge-primary">{{ product.category }}</span>
           <h3>{{ product.name }}</h3>
           <p>{{ product.description }}</p>
           <div class="product-price">¥{{ product.price }}</div>
+          <div class="product-actions">
+            <button class="btn btn-primary btn-sm" @click="viewProduct(product)">查看详情</button>
+            <button class="btn btn-outline btn-sm" @click="addToCart(product)">加入购物车</button>
+          </div>
         </div>
+      </div>
+
+      <!-- 空状态 -->
+      <div v-if="filteredProducts.length === 0" class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>未找到产品</h3>
+        <p>尝试使用其他关键词或筛选条件</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const products = ref([
   {
@@ -72,6 +113,40 @@ const products = ref([
     icon: '😊'
   }
 ])
+
+// 搜索和筛选状态
+const searchQuery = ref('')
+const selectedCategory = ref('')
+
+// 获取所有分类
+const categories = computed(() => {
+  return [...new Set(products.value.map(p => p.category))]
+})
+
+// 筛选后的产品
+const filteredProducts = computed(() => {
+  return products.value.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+    const matchesCategory = selectedCategory.value === '' || product.category === selectedCategory.value
+    return matchesSearch && matchesCategory
+  })
+})
+
+// 选择分类
+const selectCategory = (category) => {
+  selectedCategory.value = category
+}
+
+// 查看产品详情
+const viewProduct = (product) => {
+  alert(`查看产品: ${product.name}\n\n${product.description}\n\n价格: ¥${product.price}`)
+}
+
+// 加入购物车
+const addToCart = (product) => {
+  alert(`已将 "${product.name}" 加入购物车！\n价格: ¥${product.price}`)
+}
 </script>
 
 <style scoped>
@@ -96,10 +171,37 @@ const products = ref([
   color: var(--gray-600);
 }
 
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-xl);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.search-box {
+  max-width: 400px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
 .product-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .product-image {
@@ -131,5 +233,40 @@ const products = ref([
   display: flex;
   gap: var(--space-sm);
   flex-direction: column;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-3xl);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-lg);
+}
+
+.empty-state h3 {
+  font-size: var(--text-xl);
+  color: var(--gray-900);
+  margin-bottom: var(--space-md);
+}
+
+.empty-state p {
+  color: var(--gray-600);
+}
+
+@media (min-width: 768px) {
+  .filter-section {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .product-actions {
+    flex-direction: row;
+  }
 }
 </style>
