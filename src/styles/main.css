@@ -174,6 +174,220 @@ body {
     font-size: var(--text-lg);
 }
 
+/* 更多按钮变体 */
+.btn-text {
+    background: transparent;
+    color: var(--primary);
+    padding: var(--space-sm) var(--space-md);
+}
+
+.btn-text:hover {
+    background: rgba(37, 99, 235, 0.1);
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-text.btn-secondary {
+    color: var(--secondary);
+}
+
+.btn-text.btn-secondary:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.btn-text.btn-danger {
+    color: var(--error);
+}
+
+.btn-text.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+}
+
+.btn-ghost:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--error), #dc2626);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 2px solid var(--error);
+    color: var(--error);
+}
+
+.btn-danger-outline:hover {
+    background: var(--error);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: white;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #d97706);
+    color: white;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+/* 禁用状态 */
+.btn:disabled,
+.btn.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+.btn:disabled:hover,
+.btn.btn-disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 加载状态 */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading .btn-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+.btn-loading .btn-text {
+    opacity: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 图标按钮 */
+.btn-icon {
+    padding: var(--space-sm);
+    width: auto;
+    min-width: 0;
+    aspect-ratio: 1;
+}
+
+.btn-icon.btn-sm {
+    padding: var(--space-xs);
+}
+
+.btn-icon.btn-lg {
+    padding: var(--space-md);
+}
+
+.btn-icon .btn-icon-content {
+    font-size: 1.25em;
+    line-height: 1;
+}
+
+/* 圆形按钮 */
+.btn-circle {
+    border-radius: var(--radius-full);
+}
+
+/* 块级按钮 */
+.btn-block {
+    width: 100%;
+}
+
+/* 按钮组 */
+.btn-group {
+    display: inline-flex;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.btn-group .btn:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 次要按钮悬停 */
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+/* 边框按钮变体 */
+.btn-outline-secondary {
+    background: transparent;
+    border: 2px solid var(--secondary);
+    color: var(--secondary);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-outline-success {
+    background: transparent;
+    border: 2px solid var(--success);
+    color: var(--success);
+}
+
+.btn-outline-success:hover {
+    background: var(--success);
+    color: white;
+}
+
+.btn-outline-warning {
+    background: transparent;
+    border: 2px solid var(--warning);
+    color: var(--warning);
+}
+
+.btn-outline-warning:hover {
+    background: var(--warning);
+    color: white;
+}
+
 /* 卡片 */
 .card {
     background: white;
