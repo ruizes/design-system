@@ -21,11 +21,6 @@
             <button class="btn btn-primary btn-lg">大按钮</button>
           </div>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;button class="btn btn-primary"&gt;主要按钮&lt;/button&gt;
-&lt;button class="btn btn-secondary"&gt;次要按钮&lt;/button&gt;
-&lt;button class="btn btn-outline"&gt;边框按钮&lt;/button&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 卡片组件 -->
@@ -47,12 +42,6 @@
             <button class="btn btn-primary btn-sm">了解更多</button>
           </div>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;div class="card"&gt;
-  &lt;h3&gt;卡片标题&lt;/h3&gt;
-  &lt;p&gt;卡片内容&lt;/p&gt;
-&lt;/div&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 表单组件 -->
@@ -72,9 +61,6 @@
             <textarea class="input" rows="3" placeholder="请输入详细内容"></textarea>
           </div>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;input type="text" class="input" placeholder="请输入内容"&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 标签组件 -->
@@ -85,10 +71,6 @@
           <span class="badge badge-primary">主要标签</span>
           <span class="badge badge-success">成功标签</span>
         </div>
-        <div class="code-example">
-          <pre><code>&lt;span class="badge"&gt;默认标签&lt;/span&gt;
-&lt;span class="badge badge-primary"&gt;主要标签&lt;/span&gt;</code></pre>
-        </div>
       </section>
 
       <!-- 网格系统 -->
@@ -98,13 +80,6 @@
           <div class="grid-demo-item">列 1</div>
           <div class="grid-demo-item">列 2</div>
           <div class="grid-demo-item">列 3</div>
-        </div>
-        <div class="code-example">
-          <pre><code>&lt;div class="grid grid-3"&gt;
-  &lt;div&gt;列 1&lt;/div&gt;
-  &lt;div&gt;列 2&lt;/div&gt;
-  &lt;div&gt;列 3&lt;/div&gt;
-&lt;/div&gt;</code></pre>
         </div>
       </section>
 
@@ -198,25 +173,6 @@
   margin-bottom: var(--space-sm);
   font-weight: 500;
   color: var(--gray-700);
-}
-
-.code-example {
-  background: var(--gray-50);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  border: 1px solid var(--gray-200);
-}
-
-.code-example pre {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--gray-700);
-  overflow-x: auto;
-}
-
-.code-example code {
-  font-family: var(--font-mono);
 }
 
 .grid-demo-item {
