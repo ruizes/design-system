@@ -6,6 +6,15 @@
         <p>完整的设计系统组件库和使用指南</p>
       </div>
 
+      <!-- 可拖拽网格组件 -->
+      <section class="component-section draggable-grid-section">
+        <h2>可拖拽网格 Draggable Grid</h2>
+        <p class="section-description">
+          支持组件拖拽排序、添加组件、删除组件，自动向上吸附功能
+        </p>
+        <DraggableGrid />
+      </section>
+
       <!-- 按钮组件 -->
       <section class="component-section">
         <h2>按钮 Buttons</h2>
@@ -134,6 +143,10 @@
   </div>
 </template>
 
+<script setup>
+import DraggableGrid from '../components/DraggableGrid.vue'
+</script>
+
 <style scoped>
 .components-page {
   padding: var(--space-3xl) 0;
@@ -170,6 +183,16 @@
   color: var(--gray-900);
   padding-bottom: var(--space-md);
   border-bottom: 2px solid var(--gray-200);
+}
+
+.section-description {
+  margin-bottom: var(--space-xl);
+  color: var(--gray-600);
+  font-size: var(--text-base);
+}
+
+.draggable-grid-section {
+  padding: var(--space-xl);
 }
 
 .component-section h3 {
